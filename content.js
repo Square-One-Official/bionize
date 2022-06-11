@@ -1,7 +1,4 @@
-const BIONIZED_IDENTIFIER = 'data-bionized-identifier';
-const minNumberOfWords = 50;
-let turnedOn = true;
-const targetElements = [
+const HTML_ELEMENTS = [
 	'p',
 	'span',
 	'a',
@@ -16,10 +13,17 @@ const targetElements = [
 	'h5',
 	'h6',
 ];
+const STORAGE_KEY = 'isTurnedOn';
+const BIONIZED_IDENTIFIER = 'data-bionized-identifier';
+const MIN_NUM_OF_WORDS = 50;
+
+let turnedOn = true;
 const alternativeStates = {};
 
 function onPressToggle() {
 	turnedOn = !turnedOn;
+	setStateInStorage(turnedOn);
+
 	toggleAllTextElements();
 }
 
@@ -30,9 +34,9 @@ async function replaceText() {
 	}
 
 	// Select all target elements without the "bionised" attribute
-	const query = targetElements.map(el => `${el}:not([${BIONIZED_IDENTIFIER}])`).join(', ');
+	const query = HTML_ELEMENTS.map(el => `${el}:not([${BIONIZED_IDENTIFIER}])`).join(', ');
 	let texts = Array.from(document.querySelectorAll(query)).filter(
-		text => text.textContent.split(' ').length > minNumberOfWords,
+		text => text.textContent.split(' ').length > MIN_NUM_OF_WORDS,
 	);
 
 	console.log(`found ${texts.length} texts.`);
@@ -66,4 +70,26 @@ function toggleAllTextElements() {
 	}
 }
 
-setInterval(replaceText, 2000);
+async function getStateFromStorage() {
+	return new Promise((resolve, reject) => {
+		chrome.storage.sync.get([STORAGE_KEY], function (result) {
+			resolve(result[STORAGE_KEY]);
+		});
+	});
+}
+
+async function setStateInStorage(value) {
+	return new Promise(resolve => {
+		chrome.storage.sync.set({ [STORAGE_KEY]: value }, function () {
+			resolve();
+		});
+	});
+}
+
+async function init() {
+	turnedOn = await getStateFromStorage();
+	replaceText();
+	setInterval(replaceText, 1000);
+}
+
+init();

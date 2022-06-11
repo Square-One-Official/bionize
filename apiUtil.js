@@ -26,7 +26,7 @@ function getRequestOptions(text) {
 		headers: {
 			'content-type': 'application/x-www-form-urlencoded',
 			'X-RapidAPI-Host': 'bionic-reading1.p.rapidapi.com',
-			'X-RapidAPI-Key': '66118fa8dfmsh0dd2396efa5ffb5p1844bdjsnc6e5da1a1be1',
+			'X-RapidAPI-Key': '3cb87f961fmshf21bfd2a8e8a61cp1d535cjsncfc69f78c2a7',
 		},
 		body: encodedParams,
 	};

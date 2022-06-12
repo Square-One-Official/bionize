@@ -1,21 +1,7 @@
-const HTML_ELEMENTS = [
-	'p',
-	'span',
-	'a',
-	'li',
-	'strong',
-	'i',
-	'em',
-	'h1',
-	'h2',
-	'h3',
-	'h4',
-	'h5',
-	'h6',
-];
+const HTML_ELEMENTS = ['p', 'span', 'strong', 'i', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 const STORAGE_KEY = 'isTurnedOn';
 const BIONIZED_IDENTIFIER = 'data-bionized-identifier';
-const MIN_NUM_OF_WORDS = 50;
+const MIN_NUM_OF_WORDS = 15;
 
 let turnedOn = true;
 const alternativeStates = {};
@@ -39,8 +25,6 @@ async function replaceText() {
 		text => text.textContent.split(' ').length > MIN_NUM_OF_WORDS,
 	);
 
-	console.log(`found ${texts.length} texts.`);
-
 	for (let text of texts) {
 		const newTextContent = await fetchBionicText(text.textContent);
 		const identifier = Math.floor(Math.random() * 100000);
@@ -52,21 +36,6 @@ async function replaceText() {
 
 		// Set bionized identifier attribute so we don't bionize the same text twice
 		text.setAttribute(BIONIZED_IDENTIFIER, identifier);
-	}
-}
-
-function toggleAllTextElements() {
-	const query = Object.keys(alternativeStates)
-		.map(id => `[${BIONIZED_IDENTIFIER}="${id}"]`)
-		.join(', ');
-	const texts = document.querySelectorAll(query);
-
-	for (let text of texts) {
-		// Set text content to value from alt states and set alt state to current content
-		const prevState = text.innerHTML;
-		const id = text.getAttribute(BIONIZED_IDENTIFIER);
-		text.innerHTML = alternativeStates[id];
-		alternativeStates[id] = prevState;
 	}
 }
 
@@ -84,6 +53,21 @@ async function setStateInStorage(value) {
 			resolve();
 		});
 	});
+}
+
+function toggleAllTextElements() {
+	const query = Object.keys(alternativeStates)
+		.map(id => `[${BIONIZED_IDENTIFIER}="${id}"]`)
+		.join(', ');
+	const texts = document.querySelectorAll(query);
+
+	for (let text of texts) {
+		// Set text content to value from alt states and set alt state to current content
+		const prevState = text.innerHTML;
+		const id = text.getAttribute(BIONIZED_IDENTIFIER);
+		text.innerHTML = alternativeStates[id];
+		alternativeStates[id] = prevState;
+	}
 }
 
 async function init() {

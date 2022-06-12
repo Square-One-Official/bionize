@@ -5,6 +5,7 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
+			"css": ["style-enforcement.css"],
 			"js": ["content.js", "apiUtil.js"]
 		}
 	],
@@ -15,5 +16,8 @@
 		"default_icon": "assets/state_active.png",
 		"default_title": "Bionize"
 	},
-	"permissions": ["activeTab", "scripting", "storage"]
+	"permissions": ["activeTab", "scripting", "storage"],
+	"web_accessible_resources": [
+		{ "resources": ["style-enforcement.css"], "matches": ["<all_urls>"] }
+	]
 }

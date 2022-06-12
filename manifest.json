@@ -1,6 +1,7 @@
 {
 	"manifest_version": 3,
 	"name": "Bionize",
+	"url": "https://bionize.app",
 	"version": "1.0.0",
 	"content_scripts": [
 		{
@@ -16,7 +17,7 @@
 		"default_icon": "assets/state_active.png",
 		"default_title": "Bionize"
 	},
-	"permissions": ["activeTab", "scripting", "storage"],
+	"permissions": ["activeTab", "scripting", "storage", "contextMenus"],
 	"web_accessible_resources": [
 		{ "resources": ["style-enforcement.css"], "matches": ["<all_urls>"] }
 	]

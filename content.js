@@ -77,3 +77,5 @@ async function init() {
 }
 
 init();
+
+// TODO: Export a bunch of this code to separate files to keep things clean

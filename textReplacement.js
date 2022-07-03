@@ -2,10 +2,11 @@
  * @param {string} word text to be bionized
  */
 function calculateNumberOfBoldCharacters(word) {
-	let boldCharacterCount = Math.round((word.length - 2 / 3) * (5 / 6));
+	const wordLength = trimSpecialChars(word).length;
+	let boldCharacterCount = Math.round((wordLength - 2 / 3) * (5 / 6));
 
 	// Handle edge cases that I wasn't able to nail with this formula
-	switch (word.length) {
+	switch (wordLength) {
 		case 5:
 			boldCharacterCount = 3;
 	}
@@ -18,7 +19,10 @@ function calculateNumberOfBoldCharacters(word) {
  */
 function getBoldWordHTML(word) {
 	const boldCharacterCount = calculateNumberOfBoldCharacters(word);
-	const boldSection = `<b>${word.slice(0, boldCharacterCount)}</b>`;
+	const boldSection = `<b style="font-weight: 800 !important">${word.slice(
+		0,
+		boldCharacterCount,
+	)}</b>`;
 	const restOfWord = word.slice(boldCharacterCount);
 	return `${boldSection}${restOfWord}`;
 }
@@ -28,7 +32,7 @@ function getBoldWordHTML(word) {
  */
 function getBionizedTextHTML(text) {
 	const words = text.split(' ');
-	const result = words.map(word => getBoldWordHTML(trimSpecialChars(word))).join(' ');
+	const result = words.map(word => getBoldWordHTML(word)).join(' ');
 	return result;
 }
 

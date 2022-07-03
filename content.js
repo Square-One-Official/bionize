@@ -60,7 +60,7 @@ function toggleAllTextElements() {
 
 async function init() {
 	await sleep(100); // Wait for all files to be properly imported, otherwise throws ReferenceError
-	turnedOn = await getStateFromStorage();
+	turnedOn = getStateFromStorage ? await getStateFromStorage() : false;
 	replaceText();
 	setInterval(replaceText, 1000);
 }

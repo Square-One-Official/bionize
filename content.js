@@ -1,10 +1,14 @@
-const HTML_ELEMENTS = ['p', 'span', 'strong', 'i', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
+const HTML_ELEMENTS = ['p', 'strong', 'i', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
 const STORAGE_KEY = 'isTurnedOn';
 const BIONIZED_IDENTIFIER = 'data-bionized-identifier';
 const MIN_NUM_OF_WORDS = 15;
 
 let turnedOn = true;
 const alternativeStates = {};
+
+async function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 function onPressToggle() {
 	turnedOn = !turnedOn;
@@ -26,33 +30,17 @@ async function replaceText() {
 	);
 
 	for (let text of texts) {
-		const newTextContent = await fetchBionicText(text.textContent);
+		const bionizedText = getBionizedTextHTML(text.textContent);
 		const identifier = Math.floor(Math.random() * 100000);
 
 		// Save states to enable toggling
 		alternativeStates[identifier] = text.innerHTML;
 
-		text.innerHTML = newTextContent;
+		text.innerHTML = bionizedText;
 
 		// Set bionized identifier attribute so we don't bionize the same text twice
 		text.setAttribute(BIONIZED_IDENTIFIER, identifier);
 	}
-}
-
-async function getStateFromStorage() {
-	return new Promise((resolve, reject) => {
-		chrome.storage.sync.get([STORAGE_KEY], function (result) {
-			resolve(result[STORAGE_KEY]);
-		});
-	});
-}
-
-async function setStateInStorage(value) {
-	return new Promise(resolve => {
-		chrome.storage.sync.set({ [STORAGE_KEY]: value }, function () {
-			resolve();
-		});
-	});
 }
 
 function toggleAllTextElements() {
@@ -71,11 +59,10 @@ function toggleAllTextElements() {
 }
 
 async function init() {
+	await sleep(100); // Wait for all files to be properly imported, otherwise throws ReferenceError
 	turnedOn = await getStateFromStorage();
 	replaceText();
 	setInterval(replaceText, 1000);
 }
 
 init();
-
-// TODO: Export a bunch of this code to separate files to keep things clean

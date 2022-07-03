@@ -1,13 +1,13 @@
 {
 	"manifest_version": 3,
 	"name": "Bionize",
-	"url": "https://bionize.app",
+	"homepage_url": "https://bionize.app",
 	"version": "1.0.0",
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
 			"css": ["style-enforcement.css"],
-			"js": ["content.js", "apiUtil.js"]
+			"js": ["content.js", "util.js", "textReplacement.js"]
 		}
 	],
 	"background": {

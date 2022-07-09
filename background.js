@@ -6,12 +6,12 @@ chrome.runtime.onInstalled.addListener(details => {
 });
 
 chrome.action.onClicked.addListener(tab => {
+	setIconAccordingToStateInStorage(true);
+
 	chrome.scripting.executeScript({
 		target: { tabId: tab.id },
-		files: ['toggle.js'],
+		files: ['scripts/toggleStateOnIconClick.js'],
 	});
-
-	setIconAccordingToStateInStorage(true);
 });
 
 chrome.contextMenus.create({

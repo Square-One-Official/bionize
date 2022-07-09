@@ -10,14 +10,25 @@ async function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function onPressToggle() {
-	turnedOn = !turnedOn;
-	setStateInStorage(turnedOn);
+async function syncStateWithStorage() {
+	const turnedOnStateInStorage = await getStateFromStorage();
 
+	// If storage and local states are different, set local state to storage state
+	if (turnedOn !== turnedOnStateInStorage) {
+		await toggleState();
+	}
+}
+
+async function toggleState() {
+	turnedOn = !turnedOn;
+	await setStateInStorage(turnedOn);
 	toggleAllTextElements();
 }
 
 async function replaceText() {
+	// Make sure everything is nice and synced before proceeding
+	await syncStateWithStorage();
+
 	if (!turnedOn) {
 		console.log('Turned off, doing nothing...');
 		return;
@@ -61,8 +72,7 @@ function toggleAllTextElements() {
 async function init() {
 	await sleep(100); // Wait for all files to be properly imported, otherwise throws ReferenceError
 	turnedOn = getStateFromStorage ? await getStateFromStorage() : false;
-	replaceText();
-	setInterval(replaceText, 1000);
+	setInterval(replaceText, 500);
 }
 
 init();

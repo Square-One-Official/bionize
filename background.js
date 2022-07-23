@@ -1,6 +1,5 @@
 try {
 	importScripts('/global.js');
-	console.log('Imported util.js');
 } catch (e) {
 	console.error(e);
 }
@@ -8,7 +7,9 @@ try {
 // TODO: I'll manually have to toggle the active/inactive icon on each tab change
 const storageKey = getStorageKey('https://google.com');
 
-chrome.runtime.onInstalled.addListener(details => {
+console.log({ storageKey });
+
+chrome.runtime.onInstalled.addListener(() => {
 	setIconAccordingToStateInStorage();
 });
 
@@ -36,7 +37,7 @@ chrome.contextMenus.create({
 	title: 'Buy us a coffee ☕️ ',
 	contexts: ['action'],
 });
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+chrome.contextMenus.onClicked.addListener(info => {
 	switch (info.menuItemId) {
 		case 'bioinze_feedback':
 			chrome.tabs.create({ url: 'https://0zitr0ubvu5.typeform.com/to/DLyGSj12' });

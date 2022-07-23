@@ -5,14 +5,14 @@ const MIN_NUM_OF_WORDS = 15;
 let turnedOn = true;
 const alternativeStates = {};
 
-const storageKey = getStorageKey(window.location.hostname);
+const { hostname } = window.location;
 
 async function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function syncStateWithStorage() {
-	const turnedOnStateInStorage = await getStateFromStorage();
+	const turnedOnStateInStorage = await getStateFromStorage(hostname);
 
 	// If storage and local states are different, set local state to storage state
 	if (turnedOn !== turnedOnStateInStorage) {
@@ -21,8 +21,10 @@ async function syncStateWithStorage() {
 }
 
 async function toggleState() {
+	console.log('We got here');
 	turnedOn = !turnedOn;
-	await setStateInStorage(turnedOn);
+	await setStateInStorage(hostname, turnedOn);
+	console.log({ turnedOn });
 	toggleAllTextElements();
 }
 
@@ -33,6 +35,8 @@ async function replaceText() {
 	if (!turnedOn) {
 		console.log('Turned off, doing nothing...');
 		return;
+	} else {
+		console.log('Scanning for new next...');
 	}
 
 	// Select all target elements without the "bionised" attribute
@@ -72,7 +76,7 @@ function toggleAllTextElements() {
 
 async function init() {
 	await sleep(100); // Wait for all files to be properly imported, otherwise throws ReferenceError
-	turnedOn = getStateFromStorage ? await getStateFromStorage() : false;
+	turnedOn = getStateFromStorage ? await getStateFromStorage(hostname) : false;
 	setInterval(replaceText, 500);
 }
 

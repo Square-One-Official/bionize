@@ -55,6 +55,10 @@ async function replaceText() {
 }
 
 function toggleAllTextElements() {
+	if (!alternativeStates.length) {
+		return;
+	}
+
 	const query = Object.keys(alternativeStates)
 		.map(id => `[${BIONIZED_IDENTIFIER}="${id}"]`)
 		.join(', ');

@@ -7,7 +7,7 @@
 		{
 			"matches": ["<all_urls>"],
 			"css": ["style-enforcement.css"],
-			"js": ["main.js", "util.js", "textReplacement.js"]
+			"js": ["main.js", "global.js", "textReplacement.js", "storage.js"]
 		}
 	],
 	"background": {

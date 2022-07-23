@@ -1,5 +1,12 @@
-// TODO: Import this value instead of rewriting it
-const STORAGE_KEY = 'isTurnedOn';
+try {
+	importScripts('/global.js');
+	console.log('Imported util.js');
+} catch (e) {
+	console.error(e);
+}
+
+// TODO: I'll manually have to toggle the active/inactive icon on each tab change
+const storageKey = getStorageKey('https://google.com');
 
 chrome.runtime.onInstalled.addListener(details => {
 	setIconAccordingToStateInStorage();
@@ -48,8 +55,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
  * @param {boolean} isInverted Pass `true` if updating user toggled state but storage hasn't been updated yet
  */
 function setIconAccordingToStateInStorage(isInverted) {
-	chrome.storage.sync.get([STORAGE_KEY], result => {
-		const isTurnedOn = result[STORAGE_KEY];
+	chrome.storage.sync.get([storageKey], result => {
+		const isTurnedOn = result[storageKey];
 		chrome.action.setIcon({
 			path: `assets/${
 				(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'

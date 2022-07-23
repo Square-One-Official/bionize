@@ -1,10 +1,11 @@
 const HTML_ELEMENTS = ['p', 'strong', 'i', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-const STORAGE_KEY = 'isTurnedOn';
 const BIONIZED_IDENTIFIER = 'data-bionized-identifier';
 const MIN_NUM_OF_WORDS = 15;
 
 let turnedOn = true;
 const alternativeStates = {};
+
+const storageKey = getStorageKey(window.location.hostname);
 
 async function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));

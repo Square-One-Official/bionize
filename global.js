@@ -6,17 +6,18 @@
  * @param {string} rawDomain domain with potential subdomain
  * @returns {string} local storage key for accessing toggle state of extension per website
  */
-function getStorageKey(rawDomain) {
-	const groupSubDomains = true; // hard-coded, maybe add a toggle for this in the future
-	const domain = groupSubDomains ? trimSubDomain(rawDomain) : rawDomain;
-
-	return `TURNED-ON-FOR-${domain}`;
+function getStorageKey(url) {
+	return `TURNED-ON-FOR-${getDomainFromUrl(url)}`;
 }
 
-function trimSubDomain(domain) {
+function getDomainFromUrl(domain) {
+	let result = domain;
 	const parts = domain.split('.');
 	if (parts.length > 2) {
-		return parts.slice(1).join('.');
+		result = parts.slice(1).join('.');
 	}
-	return domain;
+	if (result.includes('/')) {
+		result = result.split('/')[0];
+	}
+	return result;
 }

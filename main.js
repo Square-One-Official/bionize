@@ -21,7 +21,6 @@ async function syncStateWithStorage() {
 }
 
 async function toggleState() {
-	console.log('We got here');
 	turnedOn = !turnedOn;
 	await setStateInStorage(hostname, turnedOn);
 	console.log({ turnedOn });

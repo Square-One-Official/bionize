@@ -4,11 +4,6 @@ try {
 	console.error(e);
 }
 
-// TODO: I'll manually have to toggle the active/inactive icon on each tab change
-const storageKey = getStorageKey('https://google.com');
-
-console.log({ storageKey });
-
 chrome.runtime.onInstalled.addListener(() => {
 	setIconAccordingToStateInStorage();
 });
@@ -56,12 +51,20 @@ chrome.contextMenus.onClicked.addListener(info => {
  * @param {boolean} isInverted Pass `true` if updating user toggled state but storage hasn't been updated yet
  */
 function setIconAccordingToStateInStorage(isInverted) {
-	chrome.storage.sync.get([storageKey], result => {
-		const isTurnedOn = result[storageKey];
-		chrome.action.setIcon({
-			path: `assets/${
-				(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'
-			}.png`,
-		});
+	chrome.tabs.query({ active: true }, tabs => {
+		// There can be multiple "active" tabs if you have several windows open
+		for (let tab of tabs) {
+			const storageKey = getStorageKey(tab.url);
+			chrome.storage.sync.get([storageKey], result => {
+				const isTurnedOn = result[storageKey];
+				console.log({ isTurnedOn, isInverted, storageKey });
+				chrome.action.setIcon({
+					path: `assets/${
+						(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'
+					}.png`,
+					tabId: tab.id,
+				});
+			});
+		}
 	});
 }

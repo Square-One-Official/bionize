@@ -57,7 +57,6 @@ function setIconAccordingToStateInStorage(isInverted) {
 			const storageKey = getStorageKey(tab.url);
 			chrome.storage.sync.get([storageKey], result => {
 				const isTurnedOn = result[storageKey];
-				console.log({ isTurnedOn, isInverted, storageKey });
 				chrome.action.setIcon({
 					path: `assets/${
 						(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'
@@ -68,3 +67,9 @@ function setIconAccordingToStateInStorage(isInverted) {
 		}
 	});
 }
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	console.log('onUpdated()');
+	console.log({ tabId, changeInfo, tab });
+	setIconAccordingToStateInStorage();
+});

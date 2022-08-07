@@ -19,7 +19,7 @@ function calculateNumberOfBoldCharacters(word) {
  */
 function getBoldWordHTML(word) {
 	const boldCharacterCount = calculateNumberOfBoldCharacters(word);
-	const boldSection = `<b style="font-weight: 800 !important">${word.slice(
+	const boldSection = `<b style="font-weight: 700 !important">${word.slice(
 		0,
 		boldCharacterCount,
 	)}</b>`;

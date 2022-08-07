@@ -1,17 +1,18 @@
 const HTML_ELEMENTS = ['p', 'strong', 'i', 'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'];
-const STORAGE_KEY = 'isTurnedOn';
 const BIONIZED_IDENTIFIER = 'data-bionized-identifier';
 const MIN_NUM_OF_WORDS = 15;
 
 let turnedOn = true;
 const alternativeStates = {};
 
+const { hostname } = window.location;
+
 async function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 async function syncStateWithStorage() {
-	const turnedOnStateInStorage = await getStateFromStorage();
+	const turnedOnStateInStorage = await getStateFromStorage(hostname);
 
 	// If storage and local states are different, set local state to storage state
 	if (turnedOn !== turnedOnStateInStorage) {
@@ -21,7 +22,7 @@ async function syncStateWithStorage() {
 
 async function toggleState() {
 	turnedOn = !turnedOn;
-	await setStateInStorage(turnedOn);
+	await setStateInStorage(hostname, turnedOn);
 	toggleAllTextElements();
 }
 
@@ -75,7 +76,7 @@ function toggleAllTextElements() {
 
 async function init() {
 	await sleep(100); // Wait for all files to be properly imported, otherwise throws ReferenceError
-	turnedOn = getStateFromStorage ? await getStateFromStorage() : false;
+	turnedOn = getStateFromStorage ? await getStateFromStorage(hostname) : false;
 	setInterval(replaceText, 500);
 }
 

@@ -7,17 +7,17 @@
 		{
 			"matches": ["<all_urls>"],
 			"css": ["style-enforcement.css"],
-			"js": ["main.js", "util.js", "textReplacement.js"]
+			"js": ["main.js", "global.js", "textReplacement.js", "storage.js"]
 		}
 	],
 	"background": {
 		"service_worker": "background.js"
 	},
 	"action": {
-		"default_icon": "assets/state_active.png",
+		"default_icon": "assets/state_inactive.png",
 		"default_title": "Bionize"
 	},
-	"permissions": ["activeTab", "scripting", "storage", "contextMenus"],
+	"permissions": ["activeTab", "scripting", "storage", "contextMenus", "tabs"],
 	"web_accessible_resources": [
 		{ "resources": ["style-enforcement.css"], "matches": ["<all_urls>"] }
 	]

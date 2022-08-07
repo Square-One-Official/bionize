@@ -1,7 +1,10 @@
-// TODO: Import this value instead of rewriting it
-const STORAGE_KEY = 'isTurnedOn';
+try {
+	importScripts('/global.js');
+} catch (e) {
+	console.error(e);
+}
 
-chrome.runtime.onInstalled.addListener(details => {
+chrome.runtime.onInstalled.addListener(() => {
 	setIconAccordingToStateInStorage();
 });
 
@@ -29,7 +32,7 @@ chrome.contextMenus.create({
 	title: 'Buy us a coffee ☕️ ',
 	contexts: ['action'],
 });
-chrome.contextMenus.onClicked.addListener((info, tab) => {
+chrome.contextMenus.onClicked.addListener(info => {
 	switch (info.menuItemId) {
 		case 'bioinze_feedback':
 			chrome.tabs.create({ url: 'https://0zitr0ubvu5.typeform.com/to/DLyGSj12' });
@@ -48,12 +51,23 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
  * @param {boolean} isInverted Pass `true` if updating user toggled state but storage hasn't been updated yet
  */
 function setIconAccordingToStateInStorage(isInverted) {
-	chrome.storage.sync.get([STORAGE_KEY], result => {
-		const isTurnedOn = result[STORAGE_KEY];
-		chrome.action.setIcon({
-			path: `assets/${
-				(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'
-			}.png`,
-		});
+	chrome.tabs.query({ active: true }, tabs => {
+		// There can be multiple "active" tabs if you have several windows open
+		for (let tab of tabs) {
+			const storageKey = getStorageKey(tab.url);
+			chrome.storage.sync.get([storageKey], result => {
+				const isTurnedOn = result[storageKey];
+				chrome.action.setIcon({
+					path: `assets/${
+						(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'
+					}.png`,
+					tabId: tab.id,
+				});
+			});
+		}
 	});
 }
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+	setIconAccordingToStateInStorage();
+});

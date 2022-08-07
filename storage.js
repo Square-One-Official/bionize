@@ -7,7 +7,6 @@ async function getStateFromStorage(url) {
 }
 
 async function setStateInStorage(url, value) {
-	console.log('setStateaInStorage called');
 	return new Promise(resolve => {
 		chrome.storage.sync.set({ [getStorageKey(url)]: value }, function () {
 			resolve();

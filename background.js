@@ -69,7 +69,5 @@ function setIconAccordingToStateInStorage(isInverted) {
 }
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-	console.log('onUpdated()');
-	console.log({ tabId, changeInfo, tab });
 	setIconAccordingToStateInStorage();
 });

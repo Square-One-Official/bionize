@@ -23,7 +23,6 @@ async function syncStateWithStorage() {
 async function toggleState() {
 	turnedOn = !turnedOn;
 	await setStateInStorage(hostname, turnedOn);
-	console.log({ turnedOn });
 	toggleAllTextElements();
 }
 
@@ -34,8 +33,6 @@ async function replaceText() {
 	if (!turnedOn) {
 		console.log('Turned off, doing nothing...');
 		return;
-	} else {
-		console.log('Scanning for new next...');
 	}
 
 	// Select all target elements without the "bionised" attribute

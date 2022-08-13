@@ -56,7 +56,7 @@ async function replaceText() {
 }
 
 function toggleAllTextElements() {
-	if (!alternativeStates.length) {
+	if (!Object.keys(alternativeStates).length) {
 		return;
 	}
 

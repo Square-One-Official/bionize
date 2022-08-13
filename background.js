@@ -51,20 +51,20 @@ chrome.contextMenus.onClicked.addListener(info => {
  * @param {boolean} isInverted Pass `true` if updating user toggled state but storage hasn't been updated yet
  */
 function setIconAccordingToStateInStorage(isInverted) {
-	chrome.tabs.query({ active: true }, tabs => {
-		// There can be multiple "active" tabs if you have several windows open
-		for (let tab of tabs) {
-			const storageKey = getStorageKey(tab.url);
-			chrome.storage.sync.get([storageKey], result => {
-				const isTurnedOn = result[storageKey];
-				chrome.action.setIcon({
-					path: `assets/${
-						(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'
-					}.png`,
-					tabId: tab.id,
-				});
+	chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+		// NOTE: This will only toggle the state for the currently active tab in the currently active browser window
+		// If the user has multiple windows with the current tab
+		const tab = tabs[0];
+		const storageKey = getStorageKey(tab.url);
+		chrome.storage.sync.get([storageKey], result => {
+			const isTurnedOn = result[storageKey];
+			chrome.action.setIcon({
+				path: `assets/${
+					(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'
+				}.png`,
+				tabId: tab.id,
 			});
-		}
+		});
 	});
 }
 

@@ -31,7 +31,6 @@ async function replaceText() {
 	await syncStateWithStorage();
 
 	if (!turnedOn) {
-		console.log('Turned off, doing nothing...');
 		return;
 	}
 

@@ -1,73 +1,139 @@
-try {
-	importScripts('/global.js');
-} catch (e) {
-	console.error(e);
+// Background service worker for Bionize
+const STORAGE_PREFIX = 'bionize_state_';
+
+// Helper function to get storage key for a URL
+function getStorageKey(url) {
+	try {
+		const hostname = new URL(url).hostname;
+		return `${STORAGE_PREFIX}${hostname}`;
+	} catch (error) {
+		console.error('Error creating storage key:', error);
+		return `${STORAGE_PREFIX}${url}`;
+	}
 }
 
-chrome.runtime.onInstalled.addListener(() => {
-	setIconAccordingToStateInStorage();
-});
+// Helper function to update icon state
+async function updateIconState(tabId, url) {
+	try {
+		if (!url || !url.startsWith('http')) return;
+		
+		const key = getStorageKey(url);
+		const data = await chrome.storage.sync.get(key);
+		const currentState = data[key] || false;
 
-chrome.action.onClicked.addListener(tab => {
-	setIconAccordingToStateInStorage(true);
-
-	chrome.scripting.executeScript({
-		target: { tabId: tab.id },
-		files: ['scripts/toggleStateOnIconClick.js'],
-	});
-});
-
-chrome.contextMenus.create({
-	id: 'bioinze_feedback',
-	title: 'Feedback 💬 ',
-	contexts: ['action'],
-});
-chrome.contextMenus.create({
-	id: 'bioinze_feature_wishlist',
-	title: 'Feature wishlist 🗒 ',
-	contexts: ['action'],
-});
-chrome.contextMenus.create({
-	id: 'bioinze_buy_coffee',
-	title: 'Buy us a coffee ☕️ ',
-	contexts: ['action'],
-});
-chrome.contextMenus.onClicked.addListener(info => {
-	switch (info.menuItemId) {
-		case 'bioinze_feedback':
-			chrome.tabs.create({ url: 'https://0zitr0ubvu5.typeform.com/to/DLyGSj12' });
-			break;
-		case 'bioinze_feature_wishlist':
-			chrome.tabs.create({ url: 'https://bionize.nolt.io/' });
-			break;
-		case 'bioinze_buy_coffee':
-			chrome.tabs.create({ url: 'https://www.buymeacoffee.com/squareone' });
-			break;
+		await chrome.action.setIcon({
+			path: currentState ? 'assets/state_active.png' : 'assets/state_inactive.png',
+			tabId: tabId
+		});
+	} catch (error) {
+		console.error('Error updating icon state:', error);
 	}
-});
+}
 
-/**
- *
- * @param {boolean} isInverted Pass `true` if updating user toggled state but storage hasn't been updated yet
- */
-function setIconAccordingToStateInStorage(isInverted) {
-	chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-		// NOTE: This will only toggle the state for the currently active tab in the currently active browser window
-		// If the user has multiple windows with the current tab
-		const tab = tabs[0];
-		const storageKey = getStorageKey(tab.url);
-		chrome.storage.sync.get([storageKey], result => {
-			const isTurnedOn = result[storageKey];
-			chrome.action.setIcon({
-				path: `assets/${
-					(isInverted ? !isTurnedOn : isTurnedOn) ? 'state_active' : 'state_inactive'
-				}.png`,
-				tabId: tab.id,
+// Initialize context menus
+chrome.runtime.onInstalled.addListener(() => {
+	// Remove existing menus and create new ones
+	chrome.contextMenus.removeAll(() => {
+		const menuItems = [
+			{
+				id: 'bionize_feedback',
+				title: 'Feedback 💬',
+				url: 'https://0zitr0ubvu5.typeform.com/to/DLyGSj12'
+			},
+			{
+				id: 'bionize_feature_wishlist',
+				title: 'Feature wishlist 🗒',
+				url: 'https://bionize.nolt.io/'
+			},
+			{
+				id: 'bionize_buy_coffee',
+				title: 'Buy us a coffee ☕️',
+				url: 'https://www.buymeacoffee.com/squareone'
+			}
+		];
+
+		menuItems.forEach(item => {
+			chrome.contextMenus.create({
+				id: item.id,
+				title: item.title,
+				contexts: ['action']
 			});
 		});
 	});
-}
+});
 
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-	setIconAccordingToStateInStorage();
+// Handle context menu clicks
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+	const menuUrls = {
+		'bionize_feedback': 'https://0zitr0ubvu5.typeform.com/to/DLyGSj12',
+		'bionize_feature_wishlist': 'https://bionize.nolt.io/',
+		'bionize_buy_coffee': 'https://www.buymeacoffee.com/squareone'
+	};
+
+	const url = menuUrls[info.menuItemId];
+	if (url) {
+		chrome.tabs.create({ url });
+	}
+});
+
+// Handle extension icon clicks
+chrome.action.onClicked.addListener(async (tab) => {
+	try {
+		if (!tab.url || !tab.url.startsWith('http')) return;
+
+		// Get current state
+		const key = getStorageKey(tab.url);
+		const data = await chrome.storage.sync.get(key);
+		const currentState = data[key] || false;
+		
+		// Toggle state
+		const newState = !currentState;
+		await chrome.storage.sync.set({ [key]: newState });
+
+		// Update icon
+		await updateIconState(tab.id, tab.url);
+
+		// Notify content script using messaging
+		try {
+			await chrome.tabs.sendMessage(tab.id, { 
+				action: 'toggleState',
+				state: newState 
+			});
+		} catch (error) {
+			// If content script isn't ready, inject it
+			await chrome.scripting.executeScript({
+				target: { tabId: tab.id },
+				files: ['main.js']
+			});
+			// Try sending the message again
+			await chrome.tabs.sendMessage(tab.id, { 
+				action: 'toggleState',
+				state: newState 
+			});
+		}
+	} catch (error) {
+		console.error('Error handling click:', error);
+	}
+});
+
+// Handle tab updates (navigation, refresh, etc.)
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+	if (changeInfo.status === 'complete' && tab.url && tab.url.startsWith('http')) {
+		await updateIconState(tabId, tab.url);
+	}
+});
+
+// Handle tab activation (switching between tabs)
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+	const tab = await chrome.tabs.get(activeInfo.tabId);
+	if (tab.url && tab.url.startsWith('http')) {
+		await updateIconState(tab.id, tab.url);
+	}
+});
+
+// Handle navigation within the same tab
+chrome.webNavigation?.onCommitted.addListener(async (details) => {
+	if (details.frameId === 0 && details.url && details.url.startsWith('http')) {
+		await updateIconState(details.tabId, details.url);
+	}
 });

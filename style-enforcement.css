@@ -1,3 +1,112 @@
-.b.bionic {
-	font-weight: bold !important;
+/* Preserve original text container styles */
+[data-bionized-identifier] {
+	/* Preserve all original styles */
+	all: inherit !important;
+	
+	/* Ensure text visibility */
+	visibility: visible !important;
+	opacity: 1 !important;
+	
+	/* Preserve text wrapping and overflow */
+	white-space: inherit !important;
+	word-wrap: inherit !important;
+	word-break: inherit !important;
+	overflow-wrap: inherit !important;
+	text-overflow: inherit !important;
+	hyphens: inherit !important;
+	
+	/* Preserve text alignment and direction */
+	text-align: inherit !important;
+	direction: inherit !important;
+	unicode-bidi: inherit !important;
+	
+	/* Preserve text spacing */
+	letter-spacing: inherit !important;
+	word-spacing: inherit !important;
+	line-height: inherit !important;
+	text-indent: inherit !important;
+	
+	/* Preserve text decoration */
+	text-decoration: inherit !important;
+	text-decoration-color: inherit !important;
+	text-decoration-style: inherit !important;
+	text-decoration-thickness: inherit !important;
+	
+	/* Preserve text transformation */
+	text-transform: inherit !important;
+	font-variant: inherit !important;
+	font-variant-caps: inherit !important;
+	font-variant-numeric: inherit !important;
+	font-variant-east-asian: inherit !important;
+	
+	/* Preserve font properties */
+	font-family: inherit !important;
+	font-size: inherit !important;
+	font-style: inherit !important;
+	font-weight: inherit !important;
+	
+	/* Preserve text coloring */
+	color: inherit !important;
+	text-shadow: inherit !important;
+	-webkit-text-fill-color: inherit !important;
+	
+	/* Preserve background */
+	background: inherit !important;
+	background-clip: inherit !important;
+	-webkit-background-clip: inherit !important;
+}
+
+/* Style the bold parts of bionized text */
+[data-bionized-identifier] b {
+	/* Preserve most styles from parent */
+	font-family: inherit !important;
+	font-size: inherit !important;
+	font-style: inherit !important;
+	color: inherit !important;
+	background: inherit !important;
+	text-shadow: inherit !important;
+	
+	/* Only override weight for the bionic effect */
+	font-weight: 700 !important;
+	display: inline !important;
+	
+	/* Ensure smooth rendering */
+	-webkit-font-smoothing: antialiased !important;
+	-moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Handle special cases */
+[data-bionized-identifier] * {
+	/* Preserve custom fonts */
+	font-family: inherit !important;
+	
+	/* Preserve custom colors */
+	color: inherit !important;
+	
+	/* Preserve custom backgrounds */
+	background: inherit !important;
+	
+	/* Preserve custom shadows */
+	text-shadow: inherit !important;
+	
+	/* Preserve custom spacing */
+	letter-spacing: inherit !important;
+	word-spacing: inherit !important;
+	
+	/* Preserve custom decorations */
+	text-decoration: inherit !important;
+}
+
+/* Handle RTL text */
+[data-bionized-identifier][dir="rtl"],
+[dir="rtl"] [data-bionized-identifier] {
+	direction: rtl !important;
+	text-align: inherit !important;
+}
+
+/* Handle vertical text */
+[data-bionized-identifier][writing-mode],
+[writing-mode] [data-bionized-identifier] {
+	writing-mode: inherit !important;
+	text-orientation: inherit !important;
 }
